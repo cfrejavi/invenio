@@ -40,7 +40,7 @@ from invenio.ext.template import render_template_to_string
 from sqlalchemy.exc import SQLAlchemyError
 from invenio.ext.sqlalchemy import db
 from invenio.modules.record_editor.models import Bibrec
-from invenio.bibfield import get_record
+#from invenio.legacy.search_engine import get_record
 #from invenio.modules.websearch.lib.search_engine import get_record
 # External imports
 #from invenio.ext.menu import register_menu
@@ -54,15 +54,17 @@ from .face_in_collection_similarity import find_faces_in_collection
 
 blueprint = Blueprint('imagetagger', __name__, url_prefix='/imagetagger',
                       template_folder='templates', static_folder='static')
+def get_record():
+    pass
 
 #default_breadcrumb_root(blueprint, '.imagetagger')
 
-#image_path = '/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/faces2.jpg'
-image_path = 'faces2.jpg'
-image_test_path2 = 'test_test.jpg'
-image_model_path = '/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/test_model.jpg'
-image_test_path = '/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/test_test.jpg'
-json_path = '/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/json_faces2.txt'
+#image_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/faces2.jpg'
+image_path = 'img/imagetagger/faces2.jpg'
+image_test_path2 = 'img/imagetagger/test_test.jpg'
+image_model_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/img/imagetagger/test_model.jpg'
+image_test_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/img/imagetagger/test_test.jpg'
+json_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json/imagetagger/json.txt'
 scaled_width = 800
 mask = np.ones((235,165),np.uint8)
 face_model_position = [0,'bidule',1280,219,72,83]
@@ -96,15 +98,15 @@ def index():
             tags.append(val)
         res = write_json(tags)
         already_tagged = json_to_array(json.loads(res.data))
-        potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
+        potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
         return template_context_function(2, image_path,tags=already_tagged, faces=potential_tags)
     else:
-        if json_exists():
-            result = read_json()
-            potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
+        if json_exists(json_path):
+            result = read_json(json_path)
+            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
             return template_context_function(1, image_path, tags=json_to_array(result), faces=potential_tags)
         else:
-            potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
+            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
             return template_context_function(1, image_path, faces=potential_tags)
     
 @blueprint.route('/record/<int:id_bibrec>/<int:action>', methods=['GET', 'POST'])
@@ -119,16 +121,16 @@ def editor(id_bibrec):
             tags.append(val)
         res = write_json(tags,json_path)
         already_tagged = json_to_array(json.loads(res.data))
-        potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
+        potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
         save_tags(id_bibrec, json.loads(res.data), action)
         return template_context_function(2, image_path,tags=already_tagged, faces=potential_tags)
     else:
         if json_exists(json_path):
             result = read_json(json_path)
-            potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
+            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
             return template_context_function(1, image_path, tags=json_to_array(result), faces=potential_tags)
         else:
-            potential_tags = find_faces("/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
+            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
             return template_context_function(1, image_path, faces=potential_tags)
 
 @blueprint.route('/record/<int:id_bibrec>/delete', methods=['GET', 'POST'])
@@ -146,7 +148,7 @@ def get_tags_for_image(id_bibrec):
 def suggest(current_image=image_model_path, current_tags=collection, image_collection=[image_test_path]):
     from .template_context_functions.tfn_imagetagger_overlay import template_context_function
     proposed_tags = []
-    #torso_path = '/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/torso.jpg'
+    #torso_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/torso.jpg'
     torso_path = '/home/cern/Documents/torso1.jpg'
     #cv2.imwrite(torso_path, mask)
     suggested = find_faces_in_collection(current_image, current_tags, image_collection, torso_path, scaled_width)

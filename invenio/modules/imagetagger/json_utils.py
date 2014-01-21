@@ -56,7 +56,10 @@ def write_json(tags, path='/home/cern/.virtualenvs/invenionext/src/invenio/inven
 
 
 def read_json(path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/json.txt'):
-	json_file = open(path, 'r')
+	try:
+		json_file = open(path, 'r')
+	except IOError:
+		print "oups"
 	strj = json.loads(json_file.read())
 	return strj
 

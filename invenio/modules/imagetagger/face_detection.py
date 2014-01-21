@@ -37,6 +37,9 @@ def faces(image,path_to_cascade):
 	cascade = cv2.CascadeClassifier(path_to_cascade)
 	return detect(image, cascade)
 
+def group_faces(faces):
+	return cv2.groupRectangles(faces, 0)
+
 def format_result(result, image_width, fixed_width):
 	factor = float(fixed_width)/float(image_width)
 	#factor = 1
@@ -65,5 +68,5 @@ def find_faces(path_to_image, width, path_to_cascade = '/home/cern/Downloads/ope
 		for tag in already_tagged:
 			cv2.rectangle(gray, (int(int(tag[2])*factor),int(int(tag[3])*factor)), (int(int(tag[2])*factor+int(tag[4])*factor),int(int(tag[3])*factor+int(tag[5])*factor)), (0,0,0), -1)
 	result = faces(gray, path_to_cascade)
-
+	#result = group_faces([result])[0]
 	return format_result(result, w, width)

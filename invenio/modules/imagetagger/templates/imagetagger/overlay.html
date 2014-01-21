@@ -18,11 +18,11 @@
 #}
 
 {% extends "page.html" %}
-{%- js url_for('imagetagger.static', filename='jquery.min.js'), 'invenio-00' -%}
-{%- js url_for('imagetagger.static', filename='jquery-ui.min.js'), 'invenio-00' -%}
-{%- js url_for('imagetagger.static', filename='tag_display.js'), 'invenio-00' -%}
+{%- js url_for('imagetagger.static', filename='js/imagetagger/jquery.min.js'), 'invenio-00' -%}
+{%- js url_for('imagetagger.static', filename='js/imagetagger/jquery-ui.min.js'), 'invenio-00' -%}
+{%- js url_for('imagetagger.static', filename='js/imagetagger/tag_display.js'), 'invenio-00' -%}
 
-{%- css url_for('imagetagger.static', filename='jquery-ui.css'), '00-invenio' -%}
+{%- css url_for('imagetagger.static', filename='css/imagetagger/jquery-ui.css'), '00-invenio' -%}
 
 {% block header %}
 <style type="text/css" >
@@ -165,8 +165,8 @@
 
 {% block body %}
 <script>
-var del = "{{ url_for('imagetagger.static', filename='x2.png') }}";
-var save = "{{ url_for('imagetagger.static', filename='save.png') }}";
+var del = "{{ url_for('imagetagger.static', filename='img/imagetagger/x2.png') }}";
+var save = "{{ url_for('imagetagger.static', filename='img/imagetagger/save.png') }}";
 </script>
 
 <div id='main_panel'>
@@ -174,8 +174,8 @@ var save = "{{ url_for('imagetagger.static', filename='save.png') }}";
                 <div id='image_panel' >
                     <img src="{{ url_for('imagetagger.static', filename=image) }}" id='imageMap'  width="800"/>
                     <div id='mapper' >
-                    <img class='save' src="{{ url_for('imagetagger.static', filename='save.png') }}" onclick='openDialog()' />
-                    <img src="{{ url_for('imagetagger.static', filename='x2.png') }}" class='delete' value='Delete' onclick='hideBox(this)' />
+                    <img class='save' src="{{ url_for('imagetagger.static', filename='img/imagetagger/save.png') }}" onclick='openDialog()' />
+                    <img src="{{ url_for('imagetagger.static', filename='img/imagetagger/x2.png') }}" class='delete' value='Delete' onclick='hideBox(this)' />
                     </div>
 
                     <div id="planetmap">
