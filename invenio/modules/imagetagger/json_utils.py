@@ -21,39 +21,50 @@
 
 from flask import url_for, jsonify, json
 
-def write_json(tags, path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/json.txt'):
-	# json_str = '[{"imagetag":['
-	# first = True
+
+def write_json(tags, path='/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json.txt'):
+	response = {}
 	# for ind in range(len(tags)):
 	# 	if first:
 	# 		first = False
 	# 	else:
 	# 		json_str += ', '
 	# 	tag = tags[ind]
-	# 	json_str += '{"id":'+str(ind)+', "title":'+tag[0]+', "position_size":{"x":'+tag[1]+', "y":'+tag[2]+', "w":'+tag[2]+', "h":'+tag[3]+'}}'
-	# json_str += ']}]'
-	# json_file = open(path, "w")
-	# json_file.write(json_str)
-	# json_file.close()
-	response = []
-	for ind in range(len(tags)):
-		tag = tags[ind]
-		new_tag = {}
-		new_tag["id"] = str(ind)
-		new_tag["title"] = tag[0]
-		new_tag["x"] = tag[1]
-		new_tag["y"] = tag[2]
-		new_tag["w"] = tag[3]
-		new_tag["h"] = tag[4]
-		new_tag["type"] = tag[5]
-		#new_tag = {"id":str(ind), "title":tag[0], "position_size":{"x":tag[1], "y":tag[2], "w":tag[2], "h":tag[3]}}
-		response.append([ind,new_tag])
+
+	# 	new_tag = {}
+	# 	new_tag["id"] = str(ind)
+	# 	new_tag["title"] = tag[0]
+	# 	new_tag["x"] = tag[1]
+	# 	new_tag["y"] = tag[2]
+	# 	new_tag["w"] = tag[3]
+	# 	new_tag["h"] = tag[4]
+	# 	new_tag["type"] = tag[5]
+	# 	#new_tag = {"id":str(ind), "title":tag[0], "position_size":{"x":tag[1], "y":tag[2], "w":tag[2], "h":tag[3]}}
+	# 	response.append([ind,new_tag])
+	for tag in tags:
+		response.append([tag.id, tag.to_json()])
+	# 	response[str(tag.id)] = tag.to_json()
+	# print response
+	# response2 = {}
+	# response2['tags'] = response
+	# print response2
+	#result = jsonify([0, response2])
 	result = jsonify(response)
+	print result
 	json_file = open(path, "w")
 	json_file.write(result.data)
 	json_file.close()
 	return result
 
+def to_json(record_id, tags_array):
+	for tag in tags:
+		response.append(tag.to_json())
+	json['record_id'] = record_id
+	json['tags'] = response
+	return jsonify(json)
+
+def get_json(id_record):
+	pass
 
 def read_json(path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/json.txt'):
 	try:
@@ -72,6 +83,9 @@ def json_exists(path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/mo
 
 def json_to_array(tags):
 	result = []
-	for ind in tags.keys():
-		result.append([ind, tags[ind]['title'], tags[ind]['x'], tags[ind]['y'], tags[ind]['w'], tags[ind]['h'], int(tags[ind]['h'])+5, tags[ind]['type']])
+	for ind in tags['tags'].keys():
+		if image_width == 0:
+			result.append([ind, tags[ind]['title'], tags[ind]['x'], tags[ind]['y'], tags[ind]['w'], tags[ind]['h'], int(tags[ind]['h'])+5, tags[ind]['type']])
+		else:
+			pass
 	return result

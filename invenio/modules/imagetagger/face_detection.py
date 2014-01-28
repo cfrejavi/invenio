@@ -38,7 +38,8 @@ def faces(image,path_to_cascade):
 	return detect(image, cascade)
 
 def group_faces(faces):
-	return cv2.groupRectangles(faces, 0)
+	result, weights = cv2.groupRectangles(np.array(faces).tolist(), 0)
+	return result
 
 def format_result(result, image_width, fixed_width):
 	factor = float(fixed_width)/float(image_width)

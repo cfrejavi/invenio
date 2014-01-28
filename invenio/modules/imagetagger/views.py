@@ -90,12 +90,18 @@ collection2 = [face_model_position7, face_model_position8, face_model_position9,
 @blueprint.route('/', methods=['GET', 'POST'])
 def index():
     from .template_context_functions.tfn_imagetagger_overlay import template_context_function
+
+    #print dir(get_record(1))
     if request.method == 'POST':
         nb_tags = request.form["nb_tags"]
         tags = []
+        print "starting reading post..."
         for id_tag in range(int(nb_tags)):
-            val = request.form['tag'+str(id_tag)].split(';')
+            print id_tag
+            #val = request.form['tag'+str(id_tag)].split(';')
+            val = imagetag(tag_id=id_tag, array=request.form['tag'+str(id_tag)].split(';'))
             tags.append(val)
+        print 'done'
         res = write_json(tags)
         already_tagged = json_to_array(json.loads(res.data))
         potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
@@ -117,13 +123,13 @@ def editor(id_bibrec):
         nb_tags = request.form["nb_tags"]
         tags = []
         for id_tag in range(int(nb_tags)):
-            val = request.form['tag'+str(id_tag)].split(';')
+            val = imagetag (tag_id=id_tag, array=request.form['tag'+str(id_tag)].split(';'))
             tags.append(val)
-        res = write_json(tags,json_path)
-        already_tagged = json_to_array(json.loads(res.data))
-        potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
-        save_tags(id_bibrec, json.loads(res.data), action)
-        return template_context_function(2, image_path,tags=already_tagged, faces=potential_tags)
+        json = to_json(id_bibrec, tags)
+        already_tagged = json_to_array(json.loads(json.data))
+        potential_tags = find_faces(path, width=width, already_tagged=already_tagged)
+        save_tags(id_bibrec, json.loads(json.data), action)
+        return template_context_function(id_bibrec, image_path, tags=already_tagged, faces=potential_tags)
     else:
         if json_exists(json_path):
             result = read_json(json_path)
