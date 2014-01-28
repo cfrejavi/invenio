@@ -78,15 +78,9 @@
 
             #image_panel{
                 float:left;
-                width:800px;
+                /*width:800px;*/
                 position:relative;
             }
-            /*#image_panel img{
-                left:0;top:-102px;
-                max-width: 800px;
-                overflow: hidden;
-
-            }*/
 
 
             .form_panel .form_label{
@@ -167,12 +161,13 @@
 <script>
 var del = "{{ url_for('imagetagger.static', filename='img/imagetagger/x2.png') }}";
 var save = "{{ url_for('imagetagger.static', filename='img/imagetagger/save.png') }}";
+var image_width = "{{ width }}";
 </script>
 
 <div id='main_panel'>
-<div style='margin: auto; width: 800px;'>
-                <div id='image_panel' >
-                    <img src="{{ url_for('imagetagger.static', filename=image) }}" id='imageMap'  width="800"/>
+<div style='margin: auto; width: {{ width }}px;'>
+                <div id='image_panel' style='width: {{ width }}px;' >
+                    <img src="{{ url_for('imagetagger.static', filename=image) }}" id='imageMap'  width="{{ width }}px"/>
                     <div id='mapper' >
                     <img class='save' src="{{ url_for('imagetagger.static', filename='img/imagetagger/save.png') }}" onclick='openDialog()' />
                     <img src="{{ url_for('imagetagger.static', filename='img/imagetagger/x2.png') }}" class='delete' value='Delete' onclick='hideBox(this)' />
@@ -237,7 +232,7 @@ var save = "{{ url_for('imagetagger.static', filename='img/imagetagger/save.png'
                  margin: 20px auto;
                  padding: 20px 0;
                  text-align: center;
-                 width: 800px;">
+                 width: {{ width }}px;">
                 <input type="button" value="Show Tags" onclick="showTags()" />
                 <input type="button" value="Hide Tags" onclick="hideTags()" />
                 <input type="button" value="Save Tags" onclick="sendTags()" />

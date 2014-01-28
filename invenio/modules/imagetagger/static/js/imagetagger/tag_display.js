@@ -6,7 +6,7 @@ var current_face = -1;
 var current_tag = -1;
 var isFace = false;
 var current_title = '';
-var image_width = 0;
+//var image_width = 0;
 var class_ids = {'image': '#imageMap', 'mapper': '#mapper', 'tag': ".tagged", 'tag_box': '.tagged_box', 'tag_title': '.tagged_title', 'tag_type': '.type', 'face': '.tagged2', 'delete': '.delete', 'add_panel': '#form_panel_add', 'modif_panel': '#form_panel_modify', 'tag_block': '#planetmap'}
 
 function Tag(id, title, x, y, w, h, type){

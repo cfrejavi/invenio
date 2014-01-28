@@ -25,7 +25,7 @@ from invenio.ext.template import render_template_to_string
 from invenio.base.globals import cfg
 
 
-def template_context_function(id_bibrec, image, tags='', faces='', suggested=''):
+def template_context_function(id_bibrec, image, tags='', faces='', suggested='', width=800):
     """
     :param id_bibrec: ID of record
     :return: HTML containing image overlay
@@ -34,6 +34,6 @@ def template_context_function(id_bibrec, image, tags='', faces='', suggested='')
     if id_bibrec:
         return render_template_to_string(
             'imagetagger/overlay_tag.html',
-            image=image, tags=tags, faces=faces, suggested=suggested, tagged_class='tagged', tagged_class2='tagged2', tagged_box_class='tagged_box', tagged_title_class='tagged_title')
+            image=image, tags=tags, faces=faces, suggested=suggested, width=width)
     else:
         return ''

@@ -39,8 +39,11 @@ from invenio.base.globals import cfg
 from invenio.ext.template import render_template_to_string
 from sqlalchemy.exc import SQLAlchemyError
 from invenio.ext.sqlalchemy import db
-from invenio.modules.record_editor.models import Bibrec
-#from invenio.legacy.search_engine import get_record
+
+#from invenio.modules.record_editor.models import Bibrec
+#from invenio.legacy.bibdocfile.api import BibRecDocs
+#from invenio.modules.records.api import get_record
+
 #from invenio.modules.websearch.lib.search_engine import get_record
 # External imports
 #from invenio.ext.menu import register_menu
@@ -65,7 +68,7 @@ image_test_path2 = 'img/imagetagger/test_test.jpg'
 image_model_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/img/imagetagger/test_model.jpg'
 image_test_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/img/imagetagger/test_test.jpg'
 json_path = '/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json/imagetagger/json.txt'
-scaled_width = 800
+scaled_width = 801
 mask = np.ones((235,165),np.uint8)
 face_model_position = [0,'bidule',1280,219,72,83]
 face_model_position2 = [0,'machin',434,258,73,78]
@@ -103,17 +106,17 @@ def index():
             tags.append(val)
         print 'done'
         res = write_json(tags)
-        already_tagged = json_to_array(json.loads(res.data))
+        already_tagged = json_to_array(json.loads(res.data)['0'])
         potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=already_tagged)
-        return template_context_function(2, image_path,tags=already_tagged, faces=potential_tags)
+        return template_context_function(2, image_path,tags=already_tagged, faces=potential_tags, width=scaled_width)
     else:
         if json_exists(json_path):
             result = read_json(json_path)
-            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
-            return template_context_function(1, image_path, tags=json_to_array(result), faces=potential_tags)
+            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result['0']))
+            return template_context_function(1, image_path, tags=json_to_array(result['0']), faces=potential_tags, width=scaled_width)
         else:
             potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
-            return template_context_function(1, image_path, faces=potential_tags)
+            return template_context_function(1, image_path, faces=potential_tags, width=scaled_width)
     
 @blueprint.route('/record/<int:id_bibrec>/<int:action>', methods=['GET', 'POST'])
 def editor(id_bibrec):
@@ -129,15 +132,16 @@ def editor(id_bibrec):
         already_tagged = json_to_array(json.loads(json.data))
         potential_tags = find_faces(path, width=width, already_tagged=already_tagged)
         save_tags(id_bibrec, json.loads(json.data), action)
-        return template_context_function(id_bibrec, image_path, tags=already_tagged, faces=potential_tags)
+        return template_context_function(id_bibrec, image_path, tags=already_tagged, faces=potential_tags, width=width)
     else:
-        if json_exists(json_path):
-            result = read_json(json_path)
-            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width, already_tagged=json_to_array(result))
-            return template_context_function(1, image_path, tags=json_to_array(result), faces=potential_tags)
-        else:
-            potential_tags = find_faces("/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static"+url_for('imagetagger.static', filename=image_path), width=scaled_width)
-            return template_context_function(1, image_path, faces=potential_tags)
+        if actions[action] == 'edit':
+            result = get_json(id_bibrec)
+            potential_tags = find_faces(path, width=width, already_tagged=json_to_array(result))
+            return template_context_function(id_bibrec, path, tags=json_to_array(result), faces=potential_tags, width=width)
+        elif actions[action] == 'create':
+            potential_tags = find_faces(path, width=width)
+            return template_context_function(id_bibrec, path, faces=potential_tags, width=width)
+
 
 @blueprint.route('/record/<int:id_bibrec>/delete', methods=['GET', 'POST'])
 def delete(id_bibrec):
@@ -164,4 +168,9 @@ def suggest(current_image=image_model_path, current_tags=collection, image_colle
 
 def save_tags(id_bibrec, json_tags, action):
     #record the json file associated to the record id
+    pass
+
+
+def get_path(id_record):
+    #return [f.get_full_path() for f in BibRecDocs(id_record).list_bibdocs()[0].list_latest_files() if f.subformat == '']
     pass

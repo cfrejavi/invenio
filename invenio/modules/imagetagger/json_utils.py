@@ -22,7 +22,7 @@
 from flask import url_for, jsonify, json
 
 
-def write_json(tags, path='/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json.txt'):
+def write_json(tags, path='/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json/imagetagger/json.txt'):
 	response = {}
 	# for ind in range(len(tags)):
 	# 	if first:
@@ -42,15 +42,16 @@ def write_json(tags, path='/home/cern/.virtualenvs/it/src/invenio/invenio/module
 	# 	#new_tag = {"id":str(ind), "title":tag[0], "position_size":{"x":tag[1], "y":tag[2], "w":tag[2], "h":tag[3]}}
 	# 	response.append([ind,new_tag])
 	for tag in tags:
-		response.append([tag.id, tag.to_json()])
-	# 	response[str(tag.id)] = tag.to_json()
+		#response.append([tag.id, tag.to_json()])
+		response[str(tag.id)] = tag.to_json()
+	print response
+	response2 = {}
+	response2['tags'] = response
+	print response2
+	result = jsonify([[0, response2]])
 	# print response
-	# response2 = {}
-	# response2['tags'] = response
-	# print response2
-	#result = jsonify([0, response2])
-	result = jsonify(response)
-	print result
+	# result = jsonify(response)
+	# print result
 	json_file = open(path, "w")
 	json_file.write(result.data)
 	json_file.close()
@@ -81,11 +82,14 @@ def json_exists(path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/mo
 		return False
 	return True
 
-def json_to_array(tags):
+
+def json_to_array(tags, image_width=0):
+	print '----------------tags-------------------'
+	print tags
 	result = []
 	for ind in tags['tags'].keys():
 		if image_width == 0:
-			result.append([ind, tags[ind]['title'], tags[ind]['x'], tags[ind]['y'], tags[ind]['w'], tags[ind]['h'], int(tags[ind]['h'])+5, tags[ind]['type']])
+			result.append([ind, tags['tags'][ind]['title'], tags['tags'][ind]['x'], tags['tags'][ind]['y'], tags['tags'][ind]['w'], tags['tags'][ind]['h'], int(tags['tags'][ind]['h'])+5, tags['tags'][ind]['type']])
 		else:
 			pass
 	return result
