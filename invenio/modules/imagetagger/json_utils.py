@@ -20,6 +20,7 @@
 """Json encoding and decoding"""
 
 from flask import url_for, jsonify, json
+from .models import *
 
 
 def write_json(tags, path='/home/cern/.virtualenvs/it/src/invenio/invenio/modules/imagetagger/static/json/imagetagger/json.txt'):
@@ -64,8 +65,12 @@ def to_json(record_id, tags_array):
 	json['tags'] = response
 	return jsonify(json)
 
-def get_json(id_record):
-	pass
+def get_json(id_bibrec):
+	from invenio.ext.sqlalchemy import db
+	json_string = db.session.query(ItgTAGJson).all()
+        #.filter_by(id_bibrec=id_bibrec)
+	print json_string
+
 
 def read_json(path='/home/cern/.virtualenvs/invenionext/src/invenio/invenio/modules/imagetagger/static/json.txt'):
 	try:
