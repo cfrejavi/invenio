@@ -97,7 +97,6 @@ collection2 = [face_model_position7, face_model_position8, face_model_position9,
 def index():
     from .template_context_functions.tfn_imagetagger_overlay import template_context_function
 
-    test_db(7)
     if request.method == 'POST':
         nb_tags = request.form["nb_tags"]
         tags = []
@@ -144,6 +143,9 @@ def editor(id_bibrec):
         elif actions[action] == 'create':
             potential_tags = find_faces(path, width=width)
             return template_context_function(id_bibrec, path, faces=potential_tags, width=width)
+        else:
+            potential_tags = find_faces(path, width=width)
+            return template_context_function(id_bibrec, path, faces=potential_tags, width=width)
 
 
 @blueprint.route('/record/<int:id_bibrec>/delete', methods=['GET', 'POST'])
@@ -179,14 +181,6 @@ def save_tags(id_bibrec, tags, json_tags, action):
             db.session.add(ItgTAG(title=tag.title, x=tag.x, y=tag.y, width=tag.w, height=tag.h, tag_type=tag.type, image_width=tag.image_width, id_bibrec=id_bibrec))
     db.session.flush()
 
-def test_db(id_bibrec):
-    #for instance in db.session.query(Bibrec):
-     #   print instance.id
-    #tag = ItgTAG(title='blabla', x=0, y=0, width=15, height=15, tag_type=0, image_width=100, id_bibrec=id_bibrec)
-    #db.session.add(tag)
-    print ItgTAG.query.get(6)
-    for instance in db.session.query(ItgTAG):
-        print instance.id, instance.title
 
 def get_path(id_record):
     #return [f.get_full_path() for f in BibRecDocs(id_record).list_bibdocs()[0].list_latest_files() if f.subformat == '']
