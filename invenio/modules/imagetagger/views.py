@@ -188,6 +188,12 @@ def get_path(id_record):
     record = Bibrec.query.get(id_record)
     print dir(record)
 
+def is_collection(id_record):
+    return false 
+
+def get_image_list(id_collection):
+    return ""
+
 @blueprint.route('/modelsuggestion')
 def display_model(image_path=image_path, collection=collection):
     from .template_context_functions.tfn_imagetagger_overlay import template_context_function
