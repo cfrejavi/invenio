@@ -18,32 +18,67 @@
 ## 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 """Face detection"""
+
 import sys
 import cv2
 import cv2.cv as cv
 import numpy as np
 import math
+from .utils import list_cascades
 
-def detect(image,cascade):
-	size = int(0.06*len(image))
+cascades = None
+
+def init_cascades(list=list_cascades):
+	global cascades
+	cascades = []
+	for cascade_name in list_cascades:
+		if len(cascades) == 0:
+			cascades = [cv2.CascadeClassifier(cascade_name)]
+		else:
+			cascades.append(cv2.CascadeClassifier(cascade_name))
+
+def detect(image, mirror, cascade):
+	"""detection using a cascade classifier object (see OpenCV doc)"""
 	result = cascade.detectMultiScale(image, scaleFactor = 1.1, minNeighbors = 2, minSize = (10,10), flags = cv.CV_HAAR_SCALE_IMAGE)
-	return result
+	result2 = cascade.detectMultiScale(mirror, scaleFactor = 1.1, minNeighbors = 2, minSize = (10,10), flags = cv.CV_HAAR_SCALE_IMAGE)
+	if len(result2) == 0:
+		return result
+	elif len(result) == 0:
+		return result2
+	else:
+		return np.vstack([result2, result])
 
 def draw(image, results):
 	for x, y, width, height in results:
 		cv2.rectangle(image, (x,y), (x+width, y+height), (0, 255, 0), 2)
 
-def faces(image,path_to_cascade):
-	cascade = cv2.CascadeClassifier(path_to_cascade)
-	return detect(image, cascade)
+def faces(image, path_to_cascade=""):
+	global cascades
+	mirror = cv2.flip(image, 1)
+	if len(path_to_cascade) > 2:
+		cascade = cv2.CascadeClassifier(path_to_cascade)
+		return detect(image, mirror, cascade)
+	else:
+		if cascades == None:
+			init_cascades()
+		result = []
+		for cascade in cascades:
+			det = detect(image, mirror, cascade)
+			if len(result) == 0:
+				result = det
+			else:
+				result = np.vstack([result, det])
+		return result
+
 
 def group_faces(faces):
+	"""function for rectangle overlap (two detectors finding the same face)"""
 	result, weights = cv2.groupRectangles(np.array(faces).tolist(), 0)
 	return result
 
 def format_result(result, image_width, fixed_width):
+	"""result to retireve to the html template -> array"""
 	factor = float(fixed_width)/float(image_width)
-	#factor = 1
 	tags = []
 	ind = 0
 	for face in result:
@@ -52,6 +87,7 @@ def format_result(result, image_width, fixed_width):
 	return tags
 
 def find_faces(path_to_image, width, path_to_cascade = '/home/cern/Downloads/opencv-2.4.6.1/data/haarcascades/haarcascade_frontalface_alt2.xml', already_tagged=[]):
+	"""whole face detection process"""
 	image = cv2.imread(path_to_image)
 	print path_to_image
 	h, w = image.shape[:2]

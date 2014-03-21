@@ -40,6 +40,7 @@ class ItgTAG(db.Model):
                           db.ForeignKey(Bibrec.id),
                           nullable=False,
                           index=True)
+    id_image = db.Column(db.Integer(15, unsigned=True), nullable=False)
     x = db.Column(db.Integer(5, unsigned=True), 
     				nullable=False)
     y = db.Column(db.Integer(5, unsigned=True), 
@@ -57,6 +58,7 @@ class ItgTAG(db.Model):
     tag_type = db.Column(db.Integer(1, unsigned=True), 
     				nullable=False)
 
+
     bibrec = db.relationship(Bibrec,
                              backref=db.backref('image_tags_association',
                                                 cascade='all'))
@@ -70,7 +72,7 @@ class ItgTAG(db.Model):
 
 class ItgTAGJson(db.Model):
     """Represents an image's json file with tags"""
-    __tablename__ = 'itgTAG'
+    __tablename__ = 'itgTAGJson'
     id = db.Column(db.Integer(15, unsigned=True), primary_key=True,
                    autoincrement=True)
 
@@ -80,11 +82,50 @@ class ItgTAGJson(db.Model):
                           primary_key=True,
                           index=True)
 
-    content = db.Column(db.String(1000),
+    id_image = db.Column(db.Integer(15, unsigned=True),
+                          nullable=False,
+                     index=True)
+
+    content = db.Column(db.String(10000),
+                     nullable=False)
+					 
+    title = db.Column(db.String(255),
                      nullable=False,
                      server_default='',
                      index=True)
 
     bibrec = db.relationship(Bibrec,
                              backref=db.backref('json_tags_association',
+                                                cascade='all'))
+
+class ItgNormalizedFace(db.Model):
+    """Represents the tag of a face, normalized and eyes aligned"""
+    __tablename__ = 'itgNormalizedFace'
+    id = db.Column(db.Integer(15, unsigned=True), primary_key=True,
+                   autoincrement=True)
+
+    id_tag = db.Column(db.Integer(15, unsigned=True),
+                          db.ForeignKey(ItgTAG.id),
+                          nullable=False,
+                          primary_key=True,
+                          index=True)
+
+    id_bibrec = db.Column(db.Integer(15, unsigned=True),
+                          nullable=False,
+                          primary_key=True,
+                          index=True)
+
+    id_image = db.Column(db.Integer(15, unsigned=True),
+                          nullable=False,
+                     index=True)
+
+    content = db.Column(db.LargeBinary,
+                     nullable=False)
+
+    # bibrec = db.relationship(Bibrec,
+    #                          backref=db.backref('json_tags_association',
+    #                                             cascade='all'))
+
+    itgtag = db.relationship(ItgTAG,
+                             backref=db.backref('face tag association',
                                                 cascade='all'))

@@ -1,4 +1,4 @@
-{#
+url_{#
 ## This file is part of Invenio.
 ## Copyright (C) 2013 CERN.
 ##
@@ -80,7 +80,6 @@
 
             #image_panel{
                 float:left;
-                /*width:800px;*/
                 position:relative;
             }
 
@@ -129,11 +128,9 @@
             }
 
             .tagged_box .delete, #mapper .delete {
-				/*background:url(x2.png) no-repeat; */
 				width:25px; 
 				height:29px; 
 				display:inline; 
-				/*z-index:3200; */
 				position:absolute; 
 				top:-17px; 
 				right:-18px; 
@@ -142,16 +139,13 @@
 			}
 
 			.tagged_box .save, #mapper .save {
-				/*background:url(x2.png) no-repeat; */
 				width:20px; 
 				height:20px; 
 				display:inline; 
-				/*z-index:3200; */
 				position:absolute; 
 				top:5px; 
 				right:-15px; 
 				cursor:pointer;
-				/*opacity: 0.8;*/
 			}
 
 
@@ -164,6 +158,8 @@
 var del = "{{ url_for('imagetagger.static', filename='img/imagetagger/x2.png') }}";
 var save = "{{ url_for('imagetagger.static', filename='img/imagetagger/save.png') }}";
 var image_width = "{{ width }}";
+var action = "{{ action }}";
+var current_url = "{{ current_url }}";
 </script>
 
 <div id='main_panel'>
@@ -240,7 +236,5 @@ var image_width = "{{ width }}";
                 <input type="button" value="Save Tags" onclick="sendTags()" />
             </div>
             </div>
-
-
 
 {% endblock %}
